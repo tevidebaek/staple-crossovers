@@ -74,14 +74,15 @@ def find_crossovers(data):
         if (paired_loc,location) not in staple_pairs: #need to remove the duplications from this list
             staple_pairs.append((location, paired_loc))
 
-    return staple_pairs
+    return staple_pairs, (num_tot, bp_long)
         
 ##########################################
       
-def number_scaffold(data):
+def number_scaffold(data, params):
     #here we loop over the scaffold and number the order of elements, they are stored in a matrix
     #first we make a matrix of all the neighbor elements
-    scaf_neighbors = np.empty((num_tot, bp_long), dtype=object)
+    scaf_neighbors = np.empty(params, dtype=object)
+    vstrands = data['vstrands']
 
     # we have different cases of the case where the scaffold has been broken or not
     flag_broken = False #checks to see if there is a break in the scaffold
@@ -107,7 +108,7 @@ def number_scaffold(data):
     print('scaffold count:', neighbor_cnt)
     #now we want to go through the array and keep track of the neighbors
     #while doing this fill a new array with the 
-    scaf_position = np.zeros((num_tot, bp_long), dtype=int)
+    scaf_position = np.zeros(params, dtype=int)
 
     if flag_broken: start_position = start_broken
     else: start_position = start_full
@@ -137,7 +138,7 @@ def number_scaffold(data):
         prev_position = current_position
         cnt+=1
     
-   return scaf_position
+    return scaf_position
 
 ####################################
     
@@ -270,13 +271,12 @@ def plot_connections(scaf_position, staple_pairs):
 
 if __name__ == "__main__":
     
-    src = './'
+    src = './16-helix-bundle-Ross/'
     filename = 'anaconda_v3.2.json'
 
     with open(src+filename,'r') as json_file:
         data = json.load(json_file)
     
-    staple_pairs = find_crossovers(data)
-    scaffold_position = number_scaffold(data)
+    staple_pairs, lattice_params = find_crossovers(data)
+    scaffold_position = number_scaffold(data, lattice_params)
     plot_connections(scaffold_position, staple_pairs)
-    
